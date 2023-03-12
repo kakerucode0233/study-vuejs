@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<title>タイトル</title>
+<script src="https://unpkg.com/vue@2.5.17"></script>
+
+<div id="app">
+  <p>{{count}}</p>
+</div>
+
+<script>
+  console.assert(typeof Vue !== 'undefined');
+
+  var vm = new Vue({
+    el: '#app',
+    data: {
+      count: 0,
+      timerId: null,
+    },
+    created() {
+      console.log('created');
+      console.log('this.count', this.count);
+      console.log('el', this.$el);
+
+      this.timerId = setInterval(()=>{
+        this.count += 1;
+      },1000)
+    },
+    mounted() {
+      console.log('mounted');
+      console.log('this.$el',this.$el)
+    },
+    beforeDestroy() {
+      console.log('beforeDestroy');
+      clearInterval(this.timerId);
+    },
+  });
+
+  window.vm = vm;
+
+</script>
+
+<style>
+  .error{
+    color: red;
+    border: 1px solid red;
+  }
+</style>
