@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<title>タイトル</title>
+<script src="https://unpkg.com/vue@2.5.17"></script>
+
+<div id="app">
+  <ul>
+    <li v-for="fruit in fruitsItems" :key="fruit.name">
+      {{fruit.name}}<counter-button @increment="incrementCartStatus()"></counter-button>
+    </li>
+  </ul>
+  <p>合計個数：{{totalCount}}</p>
+</div>
+
+<script>
+  console.assert(typeof Vue !== 'undefined');
+
+  var counterButton = Vue.component('counter-button',{
+    template: '<span>{{counter}}個<button @click="addToCart">追加</button></span>',
+    data() {
+      return {
+        counter: 0,
+      };
+    },
+    methods: {
+      addToCart() {
+        this.counter += 1;
+        this.$emit('increment'); //親コンポーネントでincrementイベントを発火
+      },
+    },
+  })
+
+  new Vue({
+    el: '#app',
+    components:{
+      'counter-button': counterButton,
+    },
+    data: {
+      totalCount: 0,
+      fruitsItems: [
+        {
+          name: '梨'
+        },
+        {
+          name: 'イチゴ'
+        }
+      ]
+    },
+    methods: {
+      incrementCartStatus() {
+        this.totalCount += 1;
+      },
+    },
+  });
+
+</script>
+

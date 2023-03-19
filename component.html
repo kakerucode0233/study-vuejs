@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<title>タイトル</title>
+<script src="https://unpkg.com/vue@2.5.17"></script>
+
+<div id="app">
+  <list-item></list-item>
+</div>
+
+<script>
+  console.assert(typeof Vue !== 'undefined');
+
+  Vue.component('list-item',{
+    template: '<li>foo {{contents}}</li>',
+    //dataをオブジェクトとして定義するのではなく、オブジェクトを返す関数として定義する
+    //　→オブジェクトとして定義するとコンポーネントで使用する際に、コンポーネントの全てのインスタンスでdataオブジェクトが共有されてしまう
+    data() {
+      return {
+        contents: 'bar',
+      };
+    },
+  })
+
+  var vm = new Vue({
+    el: '#app',
+  });
+
+  window.vm = vm;
+
+</script>
+

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<title>タイトル</title>
+<script src="https://unpkg.com/vue@2.5.17"></script>
+
+<div id="app">
+  <page-header>
+    <h1 slot="header" class="header-title">冬の果物</h1>
+  </page-header>
+  <page-content>
+    <ul slot="content">
+      <li v-for="fruit in fruitsItems" :key="fruit.name" class="header-content-item">
+        {{fruit.name}}
+      </li>
+    </ul>
+  </page-content>
+</div>
+
+<script>
+  console.assert(typeof Vue !== 'undefined');
+
+  var headerTemplate = `
+  <div>
+    <slot name="header">No title</slot>
+  </div>
+  `
+  var contentTemplate = `
+  <div>
+    <slot name="content">No contents</slot>
+  </div>
+  `
+
+  var fruitsItems = [
+    {
+      name: 'りんご',
+    },
+    {
+      name: 'イチゴ',
+    }
+  ]
+
+  Vue.component('page-header',{
+    template: headerTemplate,
+  })
+
+  Vue.component('page-content',{
+    template: contentTemplate,
+  })
+
+  new Vue({
+    el: '#app',
+    data: {
+      fruitsItems: fruitsItems,
+    }
+  });
+
+</script>
+<style>
+  .header-title{
+    width: 100%;
+    height: 30px;
+    background-color: #f1f1f1;
+    border: 1px solid #d3d3d3;
+    padding: 30px 15px;
+    font-size: 20px;
+    font-weight: bold;
+  }
+
+  .header-content-item{
+    width: 100%;
+    height: 30px;
+    background-color: #fff;
+    border: 1px solid #d3d3d3;
+    padding: 30px 15px;
+    text-align: left;
+  }
+</style>
