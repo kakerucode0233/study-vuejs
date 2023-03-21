@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>タイトル</title>
+  </head>
+  <body>
+    
+    <div id="app">
+      <router-link to="/top">トップページ</router-link>
+      <router-link to="/users">ユーザー一覧ページ</router-link>
+      <router-view></router-view>
+    </div>
+    
+    <script src="https://unpkg.com/vue@2.5.17"></script>
+    <script src="https://unpkg.com/vue-router@3.0.1"></script>
+    <script>
+      console.assert(typeof Vue !== 'undefined');
+    
+      var router = new VueRouter({
+        routes:[
+          {
+            path: '/top',
+            component: {
+              template: '<div>TOPページ</div>',
+            }
+          },
+          {
+            path: '/users',
+            component: {
+              template: '<div>ユーザー一覧ページ</div>',
+            }
+          }
+        ]
+      })
+    
+      var app = new Vue({
+       router: router,
+      }).$mount('#app');
+    
+      window.vm = vm;
+    
+    </script>
+  </body>
+
+</html>  
