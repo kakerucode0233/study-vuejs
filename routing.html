@@ -9,6 +9,8 @@
     <div id="app">
       <router-link to="/top">トップページ</router-link>
       <router-link to="/users">ユーザー一覧ページ</router-link>
+      <input type="text" v-model="userId">
+      <button @click="moveUserPage()">ページ遷移</button>
       <router-view></router-view>
     </div>
     
@@ -21,14 +23,23 @@
         routes:[
           {
             path: '/top',
+            name: 'top',
             component: {
               template: '<div>TOPページ</div>',
             }
           },
           {
             path: '/users',
+            name: 'users',
             component: {
               template: '<div>ユーザー一覧ページ</div>',
+            }
+          },
+          {
+            path: '/user/:userId',
+            name: 'user',
+            component: {
+              template: '<div>ユーザーID：{{$route.params.userId}}</div>',
             }
           }
         ]
@@ -36,9 +47,18 @@
     
       var app = new Vue({
        router: router,
+       data() {
+        return {
+          userId: 0,
+        };
+       },
+       methods: {
+        moveUserPage() {
+          router.push({name: 'user', params: {userId: this.userId}})
+        },
+       },
       }).$mount('#app');
     
-      window.vm = vm;
     
     </script>
   </body>

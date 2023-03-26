@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vue.js SPAのサンプルアプリケーション(p.123-)</title>
+</head>
+<body>
+  <div id="app">
+    <nav>
+      <!-- router-linkによるナビゲーション定義 -->
+      <router-link to="/top">TOPページ</router-link>
+      <router-link to="/users">ユーザー一覧ページ</router-link>
+      <router-link to="/user/new">ユーザー一覧ページ</router-link>
+    </nav>
+    <router-view></router-view>
+  </div>
+
+  <!-- Vue.js本体とVue Routerの読み込み -->
+  <script src="https://unpkg.com/vue@2.5.17"></script>
+  <script src="https://unpkg.com/vue-router@3.0.1"></script>
+
+  <!-- 必要な分のコンポーネントのテンプレート定義 -->
+  <script type="text/x-template" id="user-list">
+    <div>
+      <div v-if="loading">読み込み中...</div>
+      <div v-if="error" class="error">
+        {{error}}
+      </div>
+  
+      <!-- usersがロードされたら各ユーザーの名前を表示 -->
+      <ul>
+        <li v-for="user in users" :key="user.id">
+          <h2>{{user.name}}</h2>
+        </li>
+      </ul>
+    </div>
+  </script>
+
+  <!-- ユーザー詳細ページ -->
+  <script type="text/x-template" id="user-create">
+    <div>
+      <div class="sending" v-if="sending">Sending...</div>
+      <div>
+        <h2>新規ユーザー作成</h2>
+        <div>
+          <label>名前：　</label>
+          <input type="text" v-model="user.name">
+        </div>
+        <div>
+          <label>説明文：　</label>
+          <textarea v-model="user.description"></textarea>
+        </div>
+        <div v-if="error" class="error">
+          {{error}}
+        </div>
+        <div>
+          <input type="button" @click="createUser" value="送信">
+        </div>
+      </div>
+    </div>
+  </script>
+
+  <!-- ユーザー詳細ページ -->
+  <script type="text/x-template" id="user-detail">
+    <div>
+      <div v-if="loading">読み込み中...</div>
+      <div v-if="error" class="error">
+        {{error}}
+      </div>
+  
+      <!-- usersがロードされたら各ユーザーの名前を表示 -->
+      <ul>
+        <li v-if="user">
+          <h2>{{user.name}}</h2>
+          <p>{{user.description}}</p>
+        </li>
+      </ul>
+    </div>
+  </script>
+
+  <script>
+    var userData = [
+      {
+        id: 1,
+        name: 'Tanaka',
+        description: '東南アジアで働くエンジニアです。'
+      },
+      {
+        id: 2,
+        name: 'Yamada',
+        description: 'アウトドア・フットサルが趣味のエンジニアです。'
+      },
+    ]
+
+    var getUsers = function (callback) {
+      setTimeout(() => {
+        callback(null, userData)
+      }, 1000)
+    }
+
+    var getUser = function (userId, callback) {
+      setTimeout(() => {
+        var filteredUsers = userData.filter((user) => {
+          return user.id === parseInt(userId, 10)
+        })
+        callback(null, filteredUsers && filteredUsers[0])
+      }, 1000)
+    }
+
+    // 詳細ページのコンポーネント
+    var UserDetail = {
+      template: '#user-detail',
+      data(){
+        return {
+          loading: false,
+          user: null,
+          error: null
+        }
+      },
+      created(){
+        this.fetchData()
+      },
+
+      watch:{
+        '$route': 'fetchData'
+      },
+
+      methods:{
+        fetchData(){
+          this.loading = true;
+          // 取得データをusersに格納
+          getUser(this.$route.params.userId, ((err, user) => {
+            this.loading = false
+            if(err){
+              this.error = err.toString()
+            }
+            else{
+              this.user = user
+            }
+          }).bind(this))
+        }
+      }
+    }
+
+    var UserList = {
+      template: '#user-list',
+      data(){
+        return {
+          loading: false,
+          users: function (){
+            //初期値の空配列
+            return []
+          },
+          error: null,
+        }
+      },
+
+      created(){
+        this.fetchData()
+      },
+
+      watch:{
+        '$route': 'fetchData'
+      },
+
+      methods:{
+        fetchData(){
+          this.loading = true;
+          // 取得データをusersに格納
+          getUsers(((err, users) => {
+            this.loading = false
+            if(err){
+              this.error = err.toString()
+            }
+            else{
+              this.users = users
+            }
+          }).bind(this))
+        }
+        
+      }
+    }
+
+    var postUser = function(params, callback){
+      setTimeout(()=>{
+        params.id = userData.length + 1
+        userData.push(params)
+        callback(null, params)
+      }, 1000)
+    }
+
+    var UserCreate = {
+      template: '#user-create',
+      data(){
+        return {
+          sending: false,
+          user: this.defaultUser(),
+          error: null,
+        }
+      },
+      created(){},
+      methods:{
+        defaultUser(){
+          return{
+            name: '',
+            description: '',
+          }
+        },
+        createUser(){
+          if(this.user.name.trim() === ''){
+            this.error = 'Nameは必須です'
+            return
+          }
+          if(this.user.description.trim() === ''){
+            this.error = 'Descriptionは必須です'
+            return
+          }
+          postUser(this.user, ((err, user)=>{
+            this.sending = false
+            if(err){
+              this.error = err.toString()
+            }
+            else{
+              this.error = null,
+              this.user = this.defaultUser()
+              alert('新規ユーザーが登録されました')
+              this.$router.push('/users')
+            }
+          }).bind(this))
+        }
+      }
+    }
+
+    var router = new VueRouter({
+      routes:[
+        {
+          path: '/top',
+          component: {
+            template: '<div>TOPページです</div>'
+          }
+        },
+        {
+          path: '/users',
+          component: UserList
+        },
+        {
+          path: '/user/new',
+          component: UserCreate
+        },
+        {
+          path: '/user/:userId',
+          component: UserDetail
+        },
+      ]
+    })
+
+    var app = new Vue({
+      router: router,
+    }).$mount('#app')
+  </script>
+</body>
+</html>
